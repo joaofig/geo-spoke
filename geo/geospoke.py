@@ -4,9 +4,31 @@ import pandas as pd
 from geo.geomath import vec_haversine, num_haversine
 
 
+class GeoBrute(object):
+
+    def __init__(self, locations: np.ndarray):
+        self.lats = locations[:, 0]
+        self.lons = locations[:, 1]
+
+    def query_radius(self,
+                     location: np.ndarray,
+                     r: float) -> np.ndarray:
+        """
+        Selects the indices of the points that lie within a given distance from
+        a given location.
+        :param location: Location to query in [lat, lon] format
+        :param r: Radius in meters
+        :return: Array of indices
+        """
+        lat = location[0, 0]
+        lon = location[0, 1]
+        dist = vec_haversine(self.lats, self.lons, lat, lon)
+        return np.argwhere(dist <= r)
+
+
 class GeoSpoke(object):
 
-    def __init__(self, locations):
+    def __init__(self, locations: np.ndarray):
         self.lats = locations[:, 0]
         self.lons = locations[:, 1]
 
@@ -17,7 +39,16 @@ class GeoSpoke(object):
         self.sorted0 = dist0[self.idx0]
         self.sorted1 = dist1[self.idx1]
 
-    def query_radius(self, location, r):
+    def query_radius(self,
+                     location: np.ndarray,
+                     r: float) -> np.ndarray:
+        """
+        Selects the indices of the points that lie within a given distance from
+        a given location.
+        :param location: Location to query in [lat, lon] format
+        :param r: Radius in meters
+        :return: Array of indices
+        """
         lat = location[0, 0]
         lon = location[0, 1]
         d0 = num_haversine(lat, lon, 0.0, 0.0)
