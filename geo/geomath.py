@@ -55,9 +55,9 @@ def num_haversine(lat1: float,
     dlat = rad_lat2 - rad_lat1
 
     a = math.sin(dlat/2.0)**2 + math.cos(rad_lat1) * math.cos(rad_lat2) \
-        * np.sin(dlon/2.0)**2
+        * math.sin(dlon/2.0)**2
 
-    c = 2 * math.atan2(np.sqrt(a), math.sqrt(1.0 - a))
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1.0 - a))
     meters = earth_radius * c
     return meters
 
