@@ -1,9 +1,8 @@
 import numpy as np
 import math
-from numba import jit, prange
+# from numba import jit, prange
 
 
-# @jit(nopython=True)
 def arr_haversine(loc1: np.ndarray,
                   loc2: np.ndarray) -> np.ndarray:
     earth_radius = 6378137.0
@@ -26,32 +25,32 @@ def arr_haversine(loc1: np.ndarray,
         c = 2 * np.arctan2(np.sqrt(a), np.sqrt(1.0 - a))
         meters[:, i] = earth_radius * c
     return meters
-
-
-@jit(nopython=True, parallel=True)
-def numba_haversine(lat1: np.ndarray,
-                    lon1: np.ndarray,
-                    lat2: np.ndarray,
-                    lon2: np.ndarray) -> np.ndarray:
-
-    meters = np.zeros((lat1.shape[0], lat2.shape[0]))
-    earth_radius = 6378137.0
-
-    rad_lat1 = np.radians(lat1)
-    rad_lon1 = np.radians(lon1)
-    rad_lat2 = np.radians(lat2)
-    rad_lon2 = np.radians(lon2)
-
-    for i in prange(lat2.shape[0]):
-        d_lon = rad_lon2[i] - rad_lon1
-        d_lat = rad_lat2[i] - rad_lat1
-
-        a = np.sin(d_lat/2.0)**2 + np.cos(rad_lat1) * np.cos(rad_lat2[i]) \
-            * np.sin(d_lon/2.0)**2
-
-        c = 2 * np.arctan2(np.sqrt(a), np.sqrt(1.0 - a))
-        meters[:, i] = earth_radius * c
-    return meters
+#
+#
+# @jit(nopython=True, parallel=True)
+# def numba_haversine(lat1: np.ndarray,
+#                     lon1: np.ndarray,
+#                     lat2: np.ndarray,
+#                     lon2: np.ndarray) -> np.ndarray:
+#
+#     meters = np.zeros((lat1.shape[0], lat2.shape[0]))
+#     earth_radius = 6378137.0
+#
+#     rad_lat1 = np.radians(lat1)
+#     rad_lon1 = np.radians(lon1)
+#     rad_lat2 = np.radians(lat2)
+#     rad_lon2 = np.radians(lon2)
+#
+#     for i in prange(lat2.shape[0]):
+#         d_lon = rad_lon2[i] - rad_lon1
+#         d_lat = rad_lat2[i] - rad_lat1
+#
+#         a = np.sin(d_lat/2.0)**2 + np.cos(rad_lat1) * np.cos(rad_lat2[i]) \
+#             * np.sin(d_lon/2.0)**2
+#
+#         c = 2 * np.arctan2(np.sqrt(a), np.sqrt(1.0 - a))
+#         meters[:, i] = earth_radius * c
+#     return meters
 
 
 def vec_haversine(lat1: np.ndarray,
