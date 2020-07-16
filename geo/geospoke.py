@@ -5,7 +5,6 @@ import multiprocessing as mp
 import math
 import geo.geomath as gm
 
-# from geo.geomath import vec_haversine, num_haversine
 from functools import partial
 from timeit import default_timer as timer
 
@@ -38,14 +37,6 @@ class GeoBrute(object):
         return idx[:k], dist[idx[:k]]
 
 
-def spoke_init(param):
-    dist = gm.vec_haversine(param["lats"], param["lons"], param["lat"], param["lon"])
-    idx = np.argsort(dist)
-    sorted = dist[idx]
-    return sorted, idx
-
-
-# @jit(nopython=True)
 def get_slice(dim: int, i: int, k: int) -> np.ndarray:
     return slice(max(0, i - k), min(dim - 1, i + k) + 1)
 
@@ -138,12 +129,6 @@ def geo_to_h3_array(locations, resolution: int = 12):
     return hexes
 
 
-def get_h3_indices(param):
-    h3arr = param[0]
-    hs = param[1]
-    return {h: np.argwhere(h3arr == h).ravel() for h in hs}
-
-
 class H3Index(object):
 
     def __init__(self, locations: np.ndarray, resolution=10):
@@ -166,9 +151,7 @@ class H3Index(object):
         idx = h3.geo_to_h3(location[0], location[1], self.h3res)
 
         ring = h3.k_ring(idx, 1 + int(round(r / edge_len)))
-        # ring = np.intersect1d(self.h3set, k_ring, assume_unique=True)
 
-        # indices = np.nonzero(np.isin(self.h3arr, ring))[0]
         i0 = np.searchsorted(self.h3arr, ring, side='left', sorter=self.h3idx)
         i1 = np.searchsorted(self.h3arr, ring, side='right', sorter=self.h3idx)
 
@@ -243,21 +226,21 @@ def main():
 
     ind = np.zeros(0)
 
-    # start = timer()
-    # for pt in random_locations:  # [random_locations[0]]:
-    #     ind = geo_query.query_radius(pt, r=100.0)
-    # end = timer()
-    # print(ind.shape[0], np.sort(ind))
-    # print("GeoSpoke radius query took {} seconds".format(end - start))
-    # print("--------------")
+    start = timer()
+    for pt in random_locations:  # [random_locations[0]]:
+        ind = geo_query.query_radius(pt, r=100.0)
+    end = timer()
+    print(ind.shape[0], np.sort(ind))
+    print("GeoSpoke radius query took {} seconds".format(end - start))
+    print("--------------")
 
-    # start = timer()
-    # for pt in random_locations:  # [random_locations[0]]:
-    #     ind = h3_index.query_radius(pt, r=100.0)
-    # end = timer()
-    # print(ind.shape[0], np.sort(ind))
-    # print("H3Index radius query took {} seconds".format(end - start))
-    # print("--------------")
+    start = timer()
+    for pt in random_locations:  # [random_locations[0]]:
+        ind = h3_index.query_radius(pt, r=100.0)
+    end = timer()
+    print(ind.shape[0], np.sort(ind))
+    print("H3Index radius query took {} seconds".format(end - start))
+    print("--------------")
     print(" ")
 
     print("KNN - GeoSpoke ------")
