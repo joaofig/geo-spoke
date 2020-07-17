@@ -141,7 +141,6 @@ class H3Index(object):
             results = pool.map(fn, arrays)
         flattened = [item for sublist in results for item in sublist]
         self.h3arr = np.array(flattened, dtype=np.uint64)
-        self.h3set = np.sort(np.unique(self.h3arr, return_index=False))
         self.h3idx = np.argsort(self.h3arr)
 
     def query_radius(self,
